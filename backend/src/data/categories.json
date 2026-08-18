@@ -20,7 +20,7 @@
     "name": "Birds",
     "slug": "birds",
     "description": "Nutritious seeds, spacious cages, and colorful toys for birds.",
-    "image": "https://images.unsplash.com/photo-1522850959516-58f958d6212e?q=80&w=1035&auto=format&fit=crop",
+    "image": "/images/birds-category.jpg",
     "order": 2
   },
   {
@@ -28,7 +28,7 @@
     "name": "Accessories",
     "slug": "accessories",
     "description": "Leashes, collars, food bowls, carriers, and grooming accessories.",
-    "image": "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?q=80&w=1064&auto=format&fit=crop",
+    "image": "/images/accessories-category.jpg",
     "order": 3
   }
 ]

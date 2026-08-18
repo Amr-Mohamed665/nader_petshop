@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { categoriesService } from '@/services/categories.service';
+import { productsService } from '@/services/products.service';
 
 export const DEFAULT_CATEGORIES = [
   {
@@ -23,7 +24,7 @@ export const DEFAULT_CATEGORIES = [
     name: 'Birds',
     slug: 'birds',
     description: 'Nutritious seeds, spacious cages, and colorful toys for birds.',
-    image: 'https://images.unsplash.com/photo-1522850959516-58f958d6212e?q=80&w=1035&auto=format&fit=crop',
+    image: '/images/birds-category.jpg',
     order: 2,
   },
   {
@@ -31,7 +32,7 @@ export const DEFAULT_CATEGORIES = [
     name: 'Accessories',
     slug: 'accessories',
     description: 'Leashes, collars, food bowls, carriers, and grooming accessories.',
-    image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?q=80&w=1064&auto=format&fit=crop',
+    image: '/images/accessories-category.jpg',
     order: 3,
   },
 ];
@@ -63,6 +64,7 @@ export function useCategoriesQuery() {
   return useQuery({
     queryKey: ['categories'],
     queryFn: async () => {
+      // 1. Try to fetch from backend categories endpoint
       try {
         const res = await categoriesService.getAll();
         if (res?.success && Array.isArray(res.data) && res.data.length > 0) {
@@ -73,11 +75,39 @@ export function useCategoriesQuery() {
           saveStoredCategories(normalized);
           return normalized;
         }
-        return getStoredCategories();
       } catch (err) {
-        console.warn('Categories API unavailable, using local categories:', err);
-        return getStoredCategories();
+        console.warn('Categories API failed/404, attempting fallback to products:', err);
       }
+
+      // 2. Fallback: Fetch unique categories from products list returned by backend
+      try {
+        const productsRes = await productsService.getAll();
+        if (productsRes?.success && Array.isArray(productsRes.data) && productsRes.data.length > 0) {
+          const uniqueCats = [...new Set(productsRes.data.map((p) => p.category).filter(Boolean))];
+          if (uniqueCats.length > 0) {
+            const derived = uniqueCats.map((cat, idx) => {
+              const capitalized = cat.charAt(0).toUpperCase() + cat.slice(1).toLowerCase();
+              const existingDefault = DEFAULT_CATEGORIES.find(
+                (dc) => dc.slug.toLowerCase() === cat.toLowerCase()
+              );
+              return {
+                id: cat.toLowerCase(),
+                name: capitalized,
+                slug: cat.toLowerCase(),
+                description: existingDefault?.description || `Premium supplies for ${capitalized.toLowerCase()}.`,
+                image: existingDefault?.image || '',
+                order: idx,
+              };
+            });
+            saveStoredCategories(derived);
+            return derived;
+          }
+        }
+      } catch (err) {
+        console.warn('Products API failed, falling back to local storage / default:', err);
+      }
+
+      return getStoredCategories();
     },
     placeholderData: DEFAULT_CATEGORIES,
     staleTime: 1000 * 60 * 5,

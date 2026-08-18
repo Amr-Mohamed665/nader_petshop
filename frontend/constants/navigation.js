@@ -12,7 +12,6 @@ export const ADMIN_NAV_LINKS = [
   { label: 'Dashboard', href: '/admin' },
   { label: 'Manage Products', href: '/admin/products' },
   { label: 'Manage Orders', href: '/admin/orders' },
-  { label: 'Manage Categories', href: '/admin/categories' },
 ];
 
 export const FOOTER_QUICK_LINKS = [

@@ -32,7 +32,7 @@ import ConfirmModal from '@/components/molecules/ConfirmModal';
 import { productsService } from '@/services/products.service';
 
 // ─── Sortable Row ─────────────────────────────────────────────────────────────
-function SortableProductRow({ product, onEdit, onDelete, isDragOverlay }) {
+function SortableProductRow({ product, onEdit, onDelete, onToggleStatus, isDragOverlay }) {
   const {
     attributes,
     listeners,
@@ -104,9 +104,21 @@ function SortableProductRow({ product, onEdit, onDelete, isDragOverlay }) {
 
       {/* Status - hidden on xs */}
       <td className="px-3 py-3 hidden md:table-cell">
-        <Badge variant={product.available ? 'success' : 'danger'}>
-          {product.available ? 'In Stock' : 'Out of Stock'}
-        </Badge>
+        {onToggleStatus ? (
+          <button
+            onClick={() => onToggleStatus(product)}
+            className="cursor-pointer focus:outline-none transition-transform hover:scale-105 active:scale-95 block w-fit"
+            title="Click to toggle availability"
+          >
+            <Badge variant={product.available ? 'success' : 'danger'}>
+              {product.available ? 'In Stock' : 'Out of Stock'}
+            </Badge>
+          </button>
+        ) : (
+          <Badge variant={product.available ? 'success' : 'danger'}>
+            {product.available ? 'In Stock' : 'Out of Stock'}
+          </Badge>
+        )}
       </td>
 
       {/* Actions */}
@@ -186,6 +198,36 @@ export default function AdminProductsPage() {
       alert(err.response?.data?.message || 'Failed to delete product.');
     } finally {
       setDeleting(false);
+    }
+  };
+
+  const handleToggleStatus = async (product) => {
+    try {
+      const updatedStatus = !product.available;
+      
+      // Optimistic update
+      setProducts((prev) =>
+        prev.map((p) => (p.id === product.id ? { ...p, available: updatedStatus } : p))
+      );
+
+      // API call to update status
+      const res = await productsService.update(product.id, {
+        available: updatedStatus,
+      });
+
+      if (!res?.success) {
+        // Revert status on failure
+        setProducts((prev) =>
+          prev.map((p) => (p.id === product.id ? { ...p, available: product.available } : p))
+        );
+        alert(res?.message || 'Failed to update product availability.');
+      }
+    } catch (err) {
+      // Revert status on error
+      setProducts((prev) =>
+        prev.map((p) => (p.id === product.id ? { ...p, available: product.available } : p))
+      );
+      alert(err.response?.data?.message || 'An error occurred while updating status.');
     }
   };
 
@@ -313,6 +355,7 @@ export default function AdminProductsPage() {
                             key={product.id}
                             product={product}
                             onDelete={setDeleteTarget}
+                            onToggleStatus={handleToggleStatus}
                           />
                         ))
                       )}
