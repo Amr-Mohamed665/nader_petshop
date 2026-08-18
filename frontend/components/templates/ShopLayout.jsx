@@ -1,4 +1,3 @@
-import AnnouncementBar from '@/components/atoms/AnnouncementBar';
 import Navbar from '@/components/organisms/Navbar';
 import Footer from '@/components/organisms/Footer';
 import CartDrawer from '@/components/organisms/CartDrawer';
@@ -6,7 +5,6 @@ import CartDrawer from '@/components/organisms/CartDrawer';
 export default function ShopLayout({ children, fullWidth = false }) {
   return (
     <div className="flex flex-col min-h-screen bg-cream-50">
-      <AnnouncementBar />
       <Navbar />
       
       <main className={`flex-grow w-full mx-auto py-8 ${

@@ -1,4 +1,5 @@
 import { cn } from '@/utils/cn';
+import Link from 'next/link';
 
 export default function Button({
   children,
@@ -8,6 +9,7 @@ export default function Button({
   isLoading = false,
   disabled = false,
   className,
+  href,
   ...props
 }) {
   const baseStyles = 'inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed';
@@ -26,11 +28,21 @@ export default function Button({
     lg: 'px-6 py-3.5 text-base',
   };
 
+  const classes = cn(baseStyles, variants[variant], sizes[size], className);
+
+  if (href) {
+    return (
+      <Link href={href} className={classes} {...props}>
+        {children}
+      </Link>
+    );
+  }
+
   return (
     <button
       type={type}
       disabled={disabled || isLoading}
-      className={cn(baseStyles, variants[variant], sizes[size], className)}
+      className={classes}
       {...props}
     >
       {isLoading ? (

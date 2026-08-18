@@ -66,22 +66,20 @@ export default function NotFound() {
 
         {/* CTAs */}
         <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-          <Link href="/">
-            <Button
-              variant="primary"
-              className="w-full sm:w-auto px-6 py-3 bg-purple-600 hover:bg-purple-500 text-white text-xs uppercase font-extrabold tracking-wider rounded-2xl shadow-lg shadow-purple-500/10 cursor-pointer flex items-center justify-center gap-2"
-            >
-              <i className="fa-solid fa-house"></i> Back to Home
-            </Button>
-          </Link>
-          <Link href="/products">
-            <Button
-              variant="outline"
-              className="w-full sm:w-auto px-6 py-3 border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs uppercase font-extrabold tracking-wider rounded-2xl cursor-pointer flex items-center justify-center gap-2"
-            >
-              <i className="fa-solid fa-bag-shopping"></i> Browse Products
-            </Button>
-          </Link>
+          <Button
+            href="/"
+            variant="primary"
+            className="w-full sm:w-auto px-6 py-3 bg-purple-600 hover:bg-purple-500 text-white text-xs uppercase font-extrabold tracking-wider rounded-2xl shadow-lg shadow-purple-500/10 cursor-pointer flex items-center justify-center gap-2"
+          >
+            <i className="fa-solid fa-house"></i> Back to Home
+          </Button>
+          <Button
+            href="/products"
+            variant="outline"
+            className="w-full sm:w-auto px-6 py-3 border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs uppercase font-extrabold tracking-wider rounded-2xl cursor-pointer flex items-center justify-center gap-2"
+          >
+            <i className="fa-solid fa-bag-shopping"></i> Browse Products
+          </Button>
         </div>
       </div>
     </ShopLayout>

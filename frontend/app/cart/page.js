@@ -139,23 +139,17 @@ export default function CartPage() {
 
               <div className="space-y-3 pt-2">
                 {isAuthenticated ? (
-                  <Link href="/checkout" className="block">
-                    <Button variant="primary" className="w-full py-3.5 font-extrabold shadow-md shadow-teal-500/10 text-xs uppercase tracking-wider">
-                      Proceed to Checkout
-                    </Button>
-                  </Link>
-                ) : (
-                  <Link href="/login" className="block">
-                    <Button variant="primary" className="w-full py-3.5 font-extrabold shadow-md shadow-teal-500/10 text-xs uppercase tracking-wider">
-                      Login to Checkout
-                    </Button>
-                  </Link>
-                )}
-                <Link href="/products" className="block">
-                  <Button variant="outline" className="w-full py-3 font-bold text-xs">
-                    ← Continue Shopping
+                  <Button variant="primary" href="/checkout" className="w-full py-3.5 font-extrabold shadow-md shadow-teal-500/10 text-xs uppercase tracking-wider">
+                    Proceed to Checkout
                   </Button>
-                </Link>
+                ) : (
+                  <Button variant="primary" href="/login" className="w-full py-3.5 font-extrabold shadow-md shadow-teal-500/10 text-xs uppercase tracking-wider">
+                    Login to Checkout
+                  </Button>
+                )}
+                <Button variant="outline" href="/products" className="w-full py-3 font-bold text-xs">
+                  ← Continue Shopping
+                </Button>
               </div>
             </div>
           </div>

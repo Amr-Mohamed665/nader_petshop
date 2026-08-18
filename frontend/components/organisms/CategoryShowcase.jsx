@@ -30,6 +30,18 @@ const CARD_THEMES = [
     hoverBg: 'hover:bg-[#D5FAF6]',
     accentColor: 'text-[#179E91]',
   },
+  {
+    bgColor: 'bg-[#FFF0F0]',
+    borderColor: 'border-[#FECDCD]',
+    hoverBg: 'hover:bg-[#FFE0E0]',
+    accentColor: 'text-[#E53E3E]',
+  },
+  {
+    bgColor: 'bg-[#F0FFF4]',
+    borderColor: 'border-[#C6F6D5]',
+    hoverBg: 'hover:bg-[#D4FADF]',
+    accentColor: 'text-[#276749]',
+  },
 ];
 
 export default function CategoryShowcase() {
@@ -50,7 +62,7 @@ export default function CategoryShowcase() {
 
   return (
     <section className="mb-14">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-5">
         {categories.map((cat, idx) => {
           const theme = CARD_THEMES[idx % CARD_THEMES.length];
           return (

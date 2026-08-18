@@ -25,7 +25,7 @@ export default function AboutSection() {
             </div>
 
             <Link
-              href="/products"
+              href="/about"
               className="inline-flex items-center gap-2 self-start px-6 py-3 bg-[#581C87] hover:bg-[#6D28D9] text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all duration-200 shadow-md hover:shadow-lg hover:-translate-y-0.5"
             >
               Learn More About Us 🐾

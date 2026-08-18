@@ -61,6 +61,7 @@ function SortableProductRow({ product, onEdit, onDelete, onToggleStatus, isDragO
         <button
           {...attributes}
           {...listeners}
+          style={{ touchAction: 'none' }}
           className="cursor-grab active:cursor-grabbing p-1.5 text-slate-300 hover:text-slate-500 rounded-lg hover:bg-slate-100 transition-all touch-none"
           aria-label="Drag to reorder"
           title="Drag to reorder"
@@ -174,6 +175,7 @@ function SortableProductCard({ product, onDelete, onToggleStatus, isDragOverlay 
           <button
             {...attributes}
             {...listeners}
+            style={{ touchAction: 'none' }}
             className="cursor-grab active:cursor-grabbing p-1 text-slate-300 hover:text-slate-500 rounded-lg hover:bg-slate-100 transition-all touch-none flex-shrink-0"
             aria-label="Drag to reorder"
             title="Drag to reorder"
@@ -270,7 +272,7 @@ export default function AdminProductsPage() {
       activationConstraint: { distance: 5 },
     }),
     useSensor(TouchSensor, {
-      activationConstraint: { delay: 200, tolerance: 5 },
+      activationConstraint: { delay: 250, tolerance: 8 },
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
@@ -385,11 +387,9 @@ export default function AdminProductsPage() {
                 Add, edit, reorder, or remove products from the catalog.
               </p>
             </div>
-            <Link href="/admin/products/new" className="self-start sm:self-auto">
-              <Button variant="primary" className="font-extrabold text-xs uppercase tracking-wider shadow-md shadow-teal-500/10 whitespace-nowrap">
-                Add New Product
-              </Button>
-            </Link>
+            <Button href="/admin/products/new" variant="primary" className="self-start sm:self-auto font-extrabold text-xs uppercase tracking-wider shadow-md shadow-teal-500/10 whitespace-nowrap">
+              Add New Product
+            </Button>
           </div>
 
           {/* Search */}

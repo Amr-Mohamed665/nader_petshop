@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import Cookies from 'js-cookie';
 import { categoriesService } from '@/services/categories.service';
 import { productsService } from '@/services/products.service';
 
@@ -28,24 +29,42 @@ export const DEFAULT_CATEGORIES = [
     order: 2,
   },
   {
+    id: '5',
+    name: 'Hamster',
+    slug: 'hamster',
+    description: 'Cages, wheels, bedding, food, and toys for your hamster.',
+    image: 'https://images.unsplash.com/photo-1425082661705-1834bfd09dca?q=80&w=1076&auto=format&fit=crop',
+    order: 3,
+  },
+  {
+    id: '6',
+    name: 'Reptiles',
+    slug: 'reptiles',
+    description: 'Terrariums, heating lamps, substrate, and food for reptiles.',
+    image: 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?q=80&w=1169&auto=format&fit=crop',
+    order: 4,
+  },
+  {
     id: '4',
     name: 'Accessories',
     slug: 'accessories',
     description: 'Leashes, collars, food bowls, carriers, and grooming accessories.',
     image: '/images/accessories-category.jpg',
-    order: 3,
+    order: 5,
   },
 ];
 
-const LOCAL_STORAGE_KEY = 'pet_shop_custom_categories';
+const COOKIE_KEY = 'pet_shop_categories';
+const COOKIE_EXPIRES = 7; // days
 
 function getStoredCategories() {
-  if (typeof window === 'undefined') return DEFAULT_CATEGORIES;
   try {
-    const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
+    const stored = Cookies.get(COOKIE_KEY);
     if (stored) {
       const parsed = JSON.parse(stored);
-      if (Array.isArray(parsed) && parsed.length > 0) {
+      // Only trust stored categories if they have at least as many entries
+      // as the defaults — prevents a stale/partial cache from hiding categories
+      if (Array.isArray(parsed) && parsed.length >= DEFAULT_CATEGORIES.length) {
         return parsed.map((c) => ({ ...c, id: String(c.id || c._id) }));
       }
     }
@@ -54,9 +73,8 @@ function getStoredCategories() {
 }
 
 function saveStoredCategories(cats) {
-  if (typeof window === 'undefined') return;
   try {
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(cats));
+    Cookies.set(COOKIE_KEY, JSON.stringify(cats), { expires: COOKIE_EXPIRES });
   } catch (_) {}
 }
 
@@ -76,38 +94,12 @@ export function useCategoriesQuery() {
           return normalized;
         }
       } catch (err) {
-        console.warn('Categories API failed/404, attempting fallback to products:', err);
+        console.warn('Categories API failed/404, using defaults:', err);
       }
 
-      // 2. Fallback: Fetch unique categories from products list returned by backend
-      try {
-        const productsRes = await productsService.getAll();
-        if (productsRes?.success && Array.isArray(productsRes.data) && productsRes.data.length > 0) {
-          const uniqueCats = [...new Set(productsRes.data.map((p) => p.category).filter(Boolean))];
-          if (uniqueCats.length > 0) {
-            const derived = uniqueCats.map((cat, idx) => {
-              const capitalized = cat.charAt(0).toUpperCase() + cat.slice(1).toLowerCase();
-              const existingDefault = DEFAULT_CATEGORIES.find(
-                (dc) => dc.slug.toLowerCase() === cat.toLowerCase()
-              );
-              return {
-                id: cat.toLowerCase(),
-                name: capitalized,
-                slug: cat.toLowerCase(),
-                description: existingDefault?.description || `Premium supplies for ${capitalized.toLowerCase()}.`,
-                image: existingDefault?.image || '',
-                order: idx,
-              };
-            });
-            saveStoredCategories(derived);
-            return derived;
-          }
-        }
-      } catch (err) {
-        console.warn('Products API failed, falling back to local storage / default:', err);
-      }
-
-      return getStoredCategories();
+      // Backend failed — always return DEFAULT_CATEGORIES so no
+      // stale localStorage cache can hide categories from the navbar
+      return DEFAULT_CATEGORIES;
     },
     placeholderData: DEFAULT_CATEGORIES,
     staleTime: 1000 * 60 * 5,

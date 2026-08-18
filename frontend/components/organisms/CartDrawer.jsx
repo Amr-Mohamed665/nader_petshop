@@ -118,16 +118,12 @@ export default function CartDrawer() {
             </p>
 
             <div className="grid grid-cols-2 gap-3 pt-2">
-              <Link href="/cart" className="w-full" onClick={closeCart}>
-                <Button variant="outline" className="w-full py-3 text-xs font-bold">
-                  View Cart
-                </Button>
-              </Link>
-              <Link href="/checkout" className="w-full" onClick={closeCart}>
-                <Button variant="primary" className="w-full py-3 text-xs font-bold shadow-md shadow-teal-500/10">
-                  Checkout
-                </Button>
-              </Link>
+              <Button variant="outline" className="w-full py-3 text-xs font-bold" href="/cart" onClick={closeCart}>
+                View Cart
+              </Button>
+              <Button variant="primary" className="w-full py-3 text-xs font-bold shadow-md shadow-teal-500/10" href="/checkout" onClick={closeCart}>
+                Checkout
+              </Button>
             </div>
           </div>
         )}

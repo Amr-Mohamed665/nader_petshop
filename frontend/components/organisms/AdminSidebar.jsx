@@ -29,7 +29,9 @@ export default function AdminSidebar({ isOpen, onClose }) {
 
       <aside
         className={cn(
-          'w-64 bg-slate-900 text-slate-300 border-r border-slate-800 flex flex-col h-screen fixed left-0 top-0 z-30 transition-transform duration-300 ease-in-out',
+          'w-64 bg-slate-900 text-slate-300 border-r border-slate-800 flex flex-col fixed left-0 top-0 z-30 transition-transform duration-300 ease-in-out overflow-y-auto',
+          // Ensure full viewport height on all devices
+          'h-full min-h-screen',
           // Mobile: hidden off-screen by default, visible when open
           'md:translate-x-0',
           isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
@@ -51,7 +53,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
         </div>
 
         {/* Nav Menu */}
-        <nav className="flex-grow p-4 space-y-1 pt-5 overflow-y-auto min-h-0">
+        <nav className="flex-grow p-4 space-y-1 pt-5">
           <span className="block px-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">
             Administration
           </span>
@@ -81,7 +83,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
           ))}
         </nav>
 
-        {/* Footer Area */}
+        {/* Footer Area — always visible at bottom, never clipped */}
         <div className="p-4 border-t border-slate-800 space-y-1 bg-slate-950/20 flex-shrink-0">
           <Link
             href="/"

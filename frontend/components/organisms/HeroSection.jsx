@@ -122,19 +122,7 @@ export default function HeroSection() {
             Shop Now
             <i className="fa-solid fa-arrow-right text-[16px] transition-transform duration-300 group-hover:translate-x-1"></i>
           </Link>
-          <Link
-            href="/category/dogs"
-            id="hero-our-pets"
-            className="inline-flex items-center gap-2 px-8 py-3.5 text-sm sm:text-base font-bold rounded-2xl transition-all duration-300 hover:-translate-y-1"
-            style={{
-              background: 'rgba(255,255,255,0.08)',
-              border: '1.5px solid rgba(255,255,255,0.25)',
-              backdropFilter: 'blur(8px)',
-              color: '#E2E8F0',
-            }}
-          >
-            Our Pets
-          </Link>
+
         </div>
 
         {/* Trust Badges */}

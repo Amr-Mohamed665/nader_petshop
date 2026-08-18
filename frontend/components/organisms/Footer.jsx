@@ -67,7 +67,7 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-white font-extrabold text-sm uppercase tracking-wider mb-4">
+            <h4 className="text-white font-extrabold text-sm uppercase tracking-wider mb-4" style={{color:'#ffffff'}}>
               Quick Links
             </h4>
             <ul className="space-y-2.5 text-sm">
@@ -83,7 +83,7 @@ export default function Footer() {
 
           {/* Customer Service */}
           <div>
-            <h4 className="text-white font-extrabold text-sm uppercase tracking-wider mb-4">
+            <h4 className="text-white font-extrabold text-sm uppercase tracking-wider mb-4" style={{color:'#ffffff'}}>
               Customer Service
             </h4>
             <ul className="space-y-2.5 text-sm">
@@ -99,7 +99,7 @@ export default function Footer() {
 
           {/* Contact Col */}
           <div className="space-y-4">
-            <h4 className="text-white font-extrabold text-sm uppercase tracking-wider mb-4">
+            <h4 className="text-white font-extrabold text-sm uppercase tracking-wider mb-4" style={{color:'#ffffff'}}>
               Contact Us
             </h4>
             <div className="flex items-start gap-3 text-sm">
