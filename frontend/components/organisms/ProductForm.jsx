@@ -100,19 +100,7 @@ export default function ProductForm({
         placeholder="https://example.com/pet-image.jpg or video.mp4"
       />
 
-      {/* Available Checkbox */}
-      <div className="flex items-center gap-2 py-2">
-        <input
-          id="available"
-          type="checkbox"
-          checked={available}
-          onChange={(e) => setValue('available', e.target.checked)}
-          className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-slate-300 rounded"
-        />
-        <label htmlFor="available" className="text-xs font-bold text-slate-700 cursor-pointer select-none">
-          Product is available for purchase (In Stock)
-        </label>
-      </div>
+    
 
       <div className="pt-3 flex justify-end gap-3 border-t border-slate-100">
         <Button

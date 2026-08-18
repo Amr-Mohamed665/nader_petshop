@@ -41,7 +41,7 @@ export const DEFAULT_CATEGORIES = [
     name: 'Reptiles',
     slug: 'reptiles',
     description: 'Terrariums, heating lamps, substrate, and food for reptiles.',
-    image: 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?q=80&w=1169&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1504450874802-0ba2bcd9b5ae?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     order: 4,
   },
   {
