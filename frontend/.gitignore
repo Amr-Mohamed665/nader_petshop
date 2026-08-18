@@ -30,8 +30,15 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# env files — allow .env.production since it only holds public (NEXT_PUBLIC_) vars
+.env
+.env.local
+.env.development
+.env.development.local
+.env.test
+.env.test.local
+.env.production.local
+# .env.production is intentionally NOT ignored so Vercel can read the API URL
 
 # vercel
 .vercel

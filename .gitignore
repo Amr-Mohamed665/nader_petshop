@@ -1,7 +1,7 @@
 # Dependency directories
 node_modules/
 
-# Local env files
+# Local env files — .env.production is intentionally tracked (only public NEXT_PUBLIC_ vars)
 .env
 .env.local
 .env.development.local
@@ -9,7 +9,6 @@ node_modules/
 .env.production.local
 .env.development
 .env.test
-.env.production
 
 # Logs
 logs

@@ -28,13 +28,14 @@ git branch -M main
 echo Staging files...
 git add .
 echo Committing files...
-git commit -m "Initial commit of the whole project"
+git commit -m "Fix deployment: vercel.json, railway.json, env.production for categories route"
 
 :: Push to GitHub
 echo Pushing to GitHub...
-git push -u origin main
+git push -u origin main --force
 
 echo ===================================================
 echo Done! Please review the output above.
+echo Next step: Go to vercel.com and redeploy your project.
 echo ===================================================
 pause
