@@ -143,6 +143,118 @@ function SortableProductRow({ product, onEdit, onDelete, onToggleStatus, isDragO
   );
 }
 
+// ─── Sortable Card (Mobile) ──────────────────────────────────────────────────
+function SortableProductCard({ product, onDelete, onToggleStatus, isDragOverlay }) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: product.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.35 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm space-y-3 group ${
+        isDragging ? 'bg-teal-50/40 ring-2 ring-teal-400/40' : ''
+      } ${isDragOverlay ? 'shadow-2xl ring-2 ring-teal-400/40 bg-white' : ''}`}
+    >
+      <div className="flex justify-between items-start gap-2">
+        <div className="flex items-center gap-3 min-w-0 flex-grow">
+          {/* Drag Handle */}
+          <button
+            {...attributes}
+            {...listeners}
+            className="cursor-grab active:cursor-grabbing p-1 text-slate-300 hover:text-slate-500 rounded-lg hover:bg-slate-100 transition-all touch-none flex-shrink-0"
+            aria-label="Drag to reorder"
+            title="Drag to reorder"
+          >
+            <i className="fa-solid fa-grip-vertical text-[14px]"></i>
+          </button>
+
+          {/* Image */}
+          <div className="relative h-12 w-12 rounded-lg overflow-hidden bg-slate-50 border border-slate-100 flex-shrink-0">
+            {product.image ? (
+              <Image
+                src={product.image}
+                alt={product.name}
+                fill
+                className="object-cover"
+                sizes="48px"
+                unoptimized
+              />
+            ) : (
+              <div className="h-full w-full flex items-center justify-center text-base select-none">🐾</div>
+            )}
+          </div>
+
+          {/* Name & Category */}
+          <div className="min-w-0">
+            <h3 className="font-bold text-slate-900 text-xs sm:text-sm truncate">
+              {product.name}
+            </h3>
+            <div className="mt-1">
+              <Badge variant="primary" className="text-[9px] px-1.5 py-0.5">{product.category}</Badge>
+            </div>
+          </div>
+        </div>
+
+        {/* Status Switcher (Badge) */}
+        <div className="flex-shrink-0">
+          {onToggleStatus ? (
+            <button
+              onClick={() => onToggleStatus(product)}
+              className="cursor-pointer focus:outline-none transition-transform hover:scale-105 active:scale-95 block w-fit"
+              title="Click to toggle availability"
+            >
+              <Badge variant={product.available ? 'success' : 'danger'} className="text-[9px] px-1.5 py-0.5">
+                {product.available ? 'In Stock' : 'Out of Stock'}
+              </Badge>
+            </button>
+          ) : (
+            <Badge variant={product.available ? 'success' : 'danger'} className="text-[9px] px-1.5 py-0.5">
+              {product.available ? 'In Stock' : 'Out of Stock'}
+            </Badge>
+          )}
+        </div>
+      </div>
+
+      <div className="flex justify-between items-center pt-2 border-t border-slate-100">
+        <div>
+          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Price</span>
+          <Price amount={product.price} className="text-teal-600 font-extrabold text-sm" />
+        </div>
+
+        <div className="flex items-center gap-1.5">
+          <Link href={`/admin/products/${product.id}/edit`}>
+            <Button variant="outline" size="sm" className="py-1 px-3 text-[10px] font-bold h-auto">
+              Edit
+            </Button>
+          </Link>
+          <Button
+            variant="danger"
+            size="sm"
+            className="py-1 px-3 text-[10px] font-bold h-auto"
+            onClick={() => onDelete(product)}
+          >
+            Delete
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function AdminProductsPage() {
   const [products, setProducts] = useState([]);
@@ -323,26 +435,45 @@ export default function AdminProductsPage() {
               onDragStart={handleDragStart}
               onDragEnd={handleDragEnd}
             >
-              <div className="w-full overflow-x-auto rounded-2xl border border-slate-200/80 shadow-sm bg-white">
-                <table className="w-full text-left border-collapse min-w-[520px]">
-                  <thead>
-                    <tr className="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-200/80">
-                      <th className="pl-4 py-3.5 w-10">
-                        <i className="fa-solid fa-arrows-up-down text-slate-300 text-[12px]"></i>
-                      </th>
-                      <th className="px-3 py-3.5">Image</th>
-                      <th className="px-3 py-3.5">Product Name</th>
-                      <th className="px-3 py-3.5 hidden sm:table-cell">Category</th>
-                      <th className="px-3 py-3.5">Price</th>
-                      <th className="px-3 py-3.5 hidden md:table-cell">Status</th>
-                      <th className="px-3 py-3.5 text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <SortableContext
-                      items={filteredProducts.map((p) => p.id)}
-                      strategy={verticalListSortingStrategy}
-                    >
+              <SortableContext
+                items={filteredProducts.map((p) => p.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                {/* Mobile View */}
+                <div className="block md:hidden space-y-4">
+                  {filteredProducts.length === 0 ? (
+                    <div className="py-8 text-center text-sm text-slate-400">
+                      No products match your search.
+                    </div>
+                  ) : (
+                    filteredProducts.map((product) => (
+                      <SortableProductCard
+                        key={product.id}
+                        product={product}
+                        onDelete={setDeleteTarget}
+                        onToggleStatus={handleToggleStatus}
+                      />
+                    ))
+                  )}
+                </div>
+
+                {/* Desktop View */}
+                <div className="hidden md:block w-full overflow-x-auto rounded-2xl border border-slate-200/80 shadow-sm bg-white">
+                  <table className="w-full text-left border-collapse min-w-[520px]">
+                    <thead>
+                      <tr className="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-200/80">
+                        <th className="pl-4 py-3.5 w-10">
+                          <i className="fa-solid fa-arrows-up-down text-slate-300 text-[12px]"></i>
+                        </th>
+                        <th className="px-3 py-3.5">Image</th>
+                        <th className="px-3 py-3.5">Product Name</th>
+                        <th className="px-3 py-3.5 hidden sm:table-cell">Category</th>
+                        <th className="px-3 py-3.5">Price</th>
+                        <th className="px-3 py-3.5 hidden md:table-cell">Status</th>
+                        <th className="px-3 py-3.5 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
                       {filteredProducts.length === 0 ? (
                         <tr>
                           <td colSpan={7} className="px-6 py-8 text-center text-sm text-slate-400">
@@ -359,23 +490,34 @@ export default function AdminProductsPage() {
                           />
                         ))
                       )}
-                    </SortableContext>
-                  </tbody>
-                </table>
-              </div>
+                    </tbody>
+                  </table>
+                </div>
+              </SortableContext>
 
               {/* Drag overlay — renders a floating copy while dragging */}
               <DragOverlay>
                 {activeProduct ? (
-                  <table className="w-full rounded-xl overflow-hidden shadow-2xl">
-                    <tbody>
-                      <SortableProductRow
+                  <>
+                    <div className="block md:hidden w-full">
+                      <SortableProductCard
                         product={activeProduct}
                         onDelete={() => {}}
                         isDragOverlay
                       />
-                    </tbody>
-                  </table>
+                    </div>
+                    <div className="hidden md:block w-full">
+                      <table className="w-full rounded-xl overflow-hidden shadow-2xl bg-white">
+                        <tbody>
+                          <SortableProductRow
+                            product={activeProduct}
+                            onDelete={() => {}}
+                            isDragOverlay
+                          />
+                        </tbody>
+                      </table>
+                    </div>
+                  </>
                 ) : null}
               </DragOverlay>
             </DndContext>

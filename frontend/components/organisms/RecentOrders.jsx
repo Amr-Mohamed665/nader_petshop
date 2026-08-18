@@ -46,54 +46,91 @@ export default function RecentOrders({ orders = [] }) {
           <p className="text-[10px] text-slate-300 mt-1">Orders will appear here as they come in</p>
         </div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse min-w-[550px]">
-            <thead>
-              <tr className="bg-slate-50/80 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                <th className="px-5 py-3">Order ID</th>
-                <th className="px-5 py-3">Date</th>
-                <th className="px-5 py-3">Items</th>
-                <th className="px-5 py-3">Total</th>
-                <th className="px-5 py-3">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-50">
-              {orders.map((order) => {
-                const statusInfo = getStatusColor(order.status);
-                const itemCount = order.items?.reduce((sum, i) => sum + i.quantity, 0) || 0;
+        <>
+          {/* Mobile view - List of Cards (hidden on sm+) */}
+          <div className="block sm:hidden divide-y divide-slate-100">
+            {orders.map((order) => {
+              const statusInfo = getStatusColor(order.status);
+              const itemCount = order.items?.reduce((sum, i) => sum + i.quantity, 0) || 0;
 
-                return (
-                  <tr key={order.id} className="hover:bg-slate-50/50 transition-colors group">
-                    <td className="px-5 py-3">
-                      <Link
-                        href={`/admin/orders/${order.id}`}
-                        className="font-mono font-bold text-xs text-slate-800 hover:text-teal-600 transition-colors"
-                      >
-                        #{order.id?.slice(-6)}
-                      </Link>
-                    </td>
-                    <td className="px-5 py-3 text-xs text-slate-400">
-                      {formatDateShort(order.createdAt)}
-                    </td>
-                    <td className="px-5 py-3">
-                      <span className="text-xs font-semibold text-slate-600">
-                        {itemCount} item{itemCount !== 1 ? 's' : ''}
-                      </span>
-                    </td>
-                    <td className="px-5 py-3">
-                      <Price amount={order.total} className="text-xs text-teal-600 font-extrabold" />
-                    </td>
-                    <td className="px-5 py-3">
-                      <Badge variant={statusBadgeVariant(order.status)}>
-                        {statusInfo.label}
-                      </Badge>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+              return (
+                <div key={order.id} className="p-4 space-y-2 text-xs">
+                  <div className="flex justify-between items-center">
+                    <Link
+                      href={`/admin/orders/${order.id}`}
+                      className="font-mono font-bold text-slate-800 hover:text-teal-600 transition-colors"
+                    >
+                      #{order.id?.slice(-6)}
+                    </Link>
+                    <Badge variant={statusBadgeVariant(order.status)}>
+                      {statusInfo.label}
+                    </Badge>
+                  </div>
+                  <div className="flex justify-between items-center text-slate-400">
+                    <span>{formatDateShort(order.createdAt)}</span>
+                    <span className="font-semibold text-slate-600">
+                      {itemCount} item{itemCount !== 1 ? 's' : ''}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center pt-1.5 border-t border-slate-50">
+                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Total</span>
+                    <Price amount={order.total} className="text-teal-600 font-extrabold" />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Desktop/Tablet view - Table (hidden on mobile) */}
+          <div className="hidden sm:block overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-slate-50/80 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100">
+                  <th className="px-5 py-3">Order ID</th>
+                  <th className="px-5 py-3">Date</th>
+                  <th className="px-5 py-3">Items</th>
+                  <th className="px-5 py-3">Total</th>
+                  <th className="px-5 py-3">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-50">
+                {orders.map((order) => {
+                  const statusInfo = getStatusColor(order.status);
+                  const itemCount = order.items?.reduce((sum, i) => sum + i.quantity, 0) || 0;
+
+                  return (
+                    <tr key={order.id} className="hover:bg-slate-50/50 transition-colors group">
+                      <td className="px-5 py-3">
+                        <Link
+                          href={`/admin/orders/${order.id}`}
+                          className="font-mono font-bold text-xs text-slate-800 hover:text-teal-600 transition-colors"
+                        >
+                          #{order.id?.slice(-6)}
+                        </Link>
+                      </td>
+                      <td className="px-5 py-3 text-xs text-slate-400">
+                        {formatDateShort(order.createdAt)}
+                      </td>
+                      <td className="px-5 py-3">
+                        <span className="text-xs font-semibold text-slate-600">
+                          {itemCount} item{itemCount !== 1 ? 's' : ''}
+                        </span>
+                      </td>
+                      <td className="px-5 py-3">
+                        <Price amount={order.total} className="text-xs text-teal-600 font-extrabold" />
+                      </td>
+                      <td className="px-5 py-3">
+                        <Badge variant={statusBadgeVariant(order.status)}>
+                          {statusInfo.label}
+                        </Badge>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
     </div>
   );
