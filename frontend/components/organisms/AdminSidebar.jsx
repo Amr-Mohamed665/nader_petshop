@@ -29,11 +29,8 @@ export default function AdminSidebar({ isOpen, onClose }) {
 
       <aside
         className={cn(
-          'w-64 bg-slate-900 text-slate-300 border-r border-slate-800 flex flex-col fixed left-0 top-0 z-30 transition-transform duration-300 ease-in-out overflow-y-auto',
-          // Ensure full viewport height on all devices
-          'h-full min-h-screen',
-          // Mobile: hidden off-screen by default, visible when open
-          'md:translate-x-0',
+  'w-64 bg-slate-900 text-slate-300 border-r border-slate-800 flex flex-col fixed left-0 top-0 z-30 transition-transform duration-300 ease-in-out overflow-hidden',
+  'h-dvh min-h-0',
           isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
         )}
       >
@@ -53,7 +50,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
         </div>
 
         {/* Nav Menu */}
-        <nav className="flex-grow p-4 space-y-1 pt-5">
+       <nav className="flex-1 min-h-0 overflow-y-auto p-4 space-y-1 pt-5">
           <span className="block px-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">
             Administration
           </span>
