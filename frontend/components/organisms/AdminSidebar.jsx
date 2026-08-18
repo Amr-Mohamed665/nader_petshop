@@ -51,7 +51,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
         </div>
 
         {/* Nav Menu */}
-        <nav className="flex-grow p-4 space-y-1 pt-5 overflow-y-auto">
+        <nav className="flex-grow p-4 space-y-1 pt-5 overflow-y-auto min-h-0">
           <span className="block px-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">
             Administration
           </span>
