@@ -26,7 +26,13 @@ function getAll({ search, category, availableOnly } = {}) {
     items = items.filter((i) => i.available !== false);
   }
 
-  return items;
+  // Sort by order ascending, then by createdAt descending
+  return items.sort((a, b) => {
+    const orderA = a.order ?? 0;
+    const orderB = b.order ?? 0;
+    if (orderA !== orderB) return orderA - orderB;
+    return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+  });
 }
 
 function getById(id) {
@@ -35,6 +41,7 @@ function getById(id) {
 
 function create(data) {
   const items = readAll();
+  const maxOrder = items.reduce((max, i) => Math.max(max, i.order ?? 0), -1);
 
   const newItem = {
     id: Date.now().toString(),
@@ -44,6 +51,7 @@ function create(data) {
     description: data.description || "",
     image: data.image || "",
     available: data.available !== undefined ? Boolean(data.available) : true,
+    order: maxOrder + 1,
     createdAt: new Date().toISOString(),
   };
 
@@ -83,4 +91,18 @@ function remove(id) {
   return true;
 }
 
-module.exports = { getAll, getById, create, update, remove };
+function reorder(orderedIds) {
+  const items = readAll();
+
+  orderedIds.forEach((id, idx) => {
+    const item = items.find((i) => i.id === String(id));
+    if (item) {
+      item.order = idx;
+    }
+  });
+
+  writeAll(items);
+  return items.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+}
+
+module.exports = { getAll, getById, create, update, remove, reorder };

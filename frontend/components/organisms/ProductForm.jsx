@@ -94,10 +94,10 @@ export default function ProductForm({
 
       <FormField
         id="image"
-        label="Media URL (Image or Video URL)"
+        label="Media URL (Image or Video Link)"
         register={register}
         error={errors.image?.message}
-        placeholder="https://example.com/pet-image.jpg or video.mp4"
+        placeholder="Image URL, YouTube, Vimeo, Dailymotion, or direct video link (.mp4, .webm)"
       />
 
     

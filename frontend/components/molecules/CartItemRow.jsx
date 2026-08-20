@@ -1,40 +1,14 @@
-import Image from 'next/image';
 import QuantitySelector from '@/components/molecules/QuantitySelector';
 import Price from '@/components/atoms/Price';
 import IconButton from '@/components/atoms/IconButton';
+import { MediaThumbnail } from '@/components/atoms/MediaRenderer';
 
 export default function CartItemRow({ item, onUpdateQuantity, onRemove }) {
-  const isVideo = item.image && (
-    item.image.endsWith('.mp4') || 
-    item.image.endsWith('.webm') || 
-    item.image.includes('youtube.com') || 
-    item.image.includes('youtu.be')
-  );
-
   return (
     <div className="flex gap-4 py-4 border-b border-slate-100 last:border-0 items-center animate-fade-in bg-white">
       {/* Product Image / Video thumbnail */}
       <div className="relative h-16 w-16 rounded-lg overflow-hidden border border-slate-100 bg-slate-50 flex-shrink-0">
-        {item.image ? (
-          isVideo ? (
-            <div className="relative h-full w-full bg-slate-900 flex items-center justify-center">
-              <span className="text-xl">📹</span>
-            </div>
-          ) : (
-            <Image
-              src={item.image}
-              alt={item.name}
-              fill
-              className="object-cover"
-              sizes="64px"
-              unoptimized
-            />
-          )
-        ) : (
-          <div className="h-full w-full flex items-center justify-center text-slate-400 font-bold text-xl select-none">
-            🐾
-          </div>
-        )}
+        <MediaThumbnail src={item.image} alt={item.name} />
       </div>
 
       {/* Product Info */}

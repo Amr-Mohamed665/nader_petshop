@@ -1,13 +1,12 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import AdminLayout from '@/components/templates/AdminLayout';
 import AdminRoute from '@/components/guards/AdminRoute';
 import OrderTable from '@/components/organisms/OrderTable';
 import Spinner from '@/components/atoms/Spinner';
 import ErrorState from '@/components/molecules/ErrorState';
-import { ordersService } from '@/services/orders.service';
 import useOrders from '@/hooks/useOrders';
 import { ORDER_STATUSES } from '@/constants/orderStatuses';
 
@@ -15,9 +14,8 @@ const ALL_FILTER = { value: 'all', label: 'All Orders' };
 const FILTER_TABS = [ALL_FILTER, ...ORDER_STATUSES];
 
 export default function AdminOrdersPage() {
-  const { orders, loading, error, refetch, deleteOrder } = useOrders(true);
+  const { orders, loading, error, refetch, deleteOrder, updateStatus, updatingOrderId } = useOrders(true);
   const [activeFilter, setActiveFilter] = useState('all');
-  const [updatingId, setUpdatingId] = useState(null);
 
   const filteredOrders = activeFilter === 'all'
     ? orders
@@ -28,17 +26,13 @@ export default function AdminOrdersPage() {
     (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
   );
 
-  const handleStatusUpdate = useCallback(async (orderId, newStatus) => {
-    setUpdatingId(orderId);
+  const handleStatusUpdate = async (orderId, newStatus) => {
     try {
-      await ordersService.updateStatus(orderId, newStatus);
-      refetch();
+      await updateStatus({ orderId, status: newStatus });
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to update order status.');
-    } finally {
-      setUpdatingId(null);
     }
-  }, [refetch]);
+  };
 
   // Status counts for filter badges
   const statusCounts = orders.reduce((acc, o) => {
@@ -135,7 +129,7 @@ export default function AdminOrdersPage() {
               <OrderTable
                 orders={sortedOrders}
                 onStatusUpdate={handleStatusUpdate}
-                updatingId={updatingId}
+                updatingId={updatingOrderId}
                 onDelete={deleteOrder}
               />
             </div>

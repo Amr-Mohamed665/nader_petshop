@@ -2,13 +2,13 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import ShopLayout from '@/components/templates/ShopLayout';
 import Price from '@/components/atoms/Price';
 import Button from '@/components/atoms/Button';
 import Badge from '@/components/atoms/Badge';
 import Spinner from '@/components/atoms/Spinner';
+import MediaRenderer from '@/components/atoms/MediaRenderer';
 import ErrorState from '@/components/molecules/ErrorState';
 import QuantitySelector from '@/components/molecules/QuantitySelector';
 import useProduct from '@/hooks/useProduct';
@@ -48,14 +48,6 @@ export default function ProductDetailPage() {
 
   const { name, price, image, description, category, available } = product;
 
-  // Simple video source detection
-  const isVideo = image && (
-    image.endsWith('.mp4') || 
-    image.endsWith('.webm') || 
-    image.includes('youtube.com') || 
-    image.includes('youtu.be')
-  );
-
   const handleAddToCart = () => {
     if (available) {
       addItem(product, quantity);
@@ -78,33 +70,19 @@ export default function ProductDetailPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12 bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-sm">
           {/* Media Player Column */}
           <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-slate-50 border border-slate-100 shadow-inner">
-            {image ? (
-              isVideo ? (
-                <video
-                  src={image}
-                  controls
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <Image
-                  src={image}
-                  alt={name}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  priority
-                  unoptimized
-                />
-              )
-            ) : (
-              <div className="h-full w-full flex items-center justify-center text-slate-400 font-extrabold text-5xl select-none">
-                🐾
-              </div>
-            )}
+            <MediaRenderer
+              src={image}
+              alt={name}
+              sizes="(max-width: 768px) 100vw, 50vw"
+              controls
+              autoPlay
+              priority
+              fallback={
+                <div className="h-full w-full flex items-center justify-center text-slate-400 font-extrabold text-5xl select-none">
+                  🐾
+                </div>
+              }
+            />
           </div>
 
           {/* Info Details Column */}

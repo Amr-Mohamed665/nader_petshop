@@ -1,12 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import ShopLayout from '@/components/templates/ShopLayout';
 import QuantitySelector from '@/components/molecules/QuantitySelector';
 import EmptyState from '@/components/molecules/EmptyState';
 import Price from '@/components/atoms/Price';
 import Button from '@/components/atoms/Button';
+import { MediaThumbnail } from '@/components/atoms/MediaRenderer';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 
@@ -51,10 +51,6 @@ export default function CartPage() {
           {/* Items List */}
           <div className="lg:col-span-2 space-y-4">
             {items.map((item) => {
-              const isVideo = item.image && (
-                item.image.endsWith('.mp4') || item.image.endsWith('.webm')
-              );
-
               return (
                 <div
                   key={item.id}
@@ -62,24 +58,7 @@ export default function CartPage() {
                 >
                   {/* Thumbnail */}
                   <div className="relative h-20 w-20 rounded-xl overflow-hidden border border-slate-100 bg-slate-50 flex-shrink-0">
-                    {item.image ? (
-                      isVideo ? (
-                        <div className="h-full w-full bg-slate-900 flex items-center justify-center">
-                          <span className="text-2xl">📹</span>
-                        </div>
-                      ) : (
-                        <Image
-                          src={item.image}
-                          alt={item.name}
-                          fill
-                          className="object-cover"
-                          sizes="80px"
-                          unoptimized
-                        />
-                      )
-                    ) : (
-                      <div className="h-full w-full flex items-center justify-center text-2xl select-none">🐾</div>
-                    )}
+                    <MediaThumbnail src={item.image} alt={item.name} />
                   </div>
 
                   {/* Info */}

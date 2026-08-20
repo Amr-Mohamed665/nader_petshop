@@ -1,23 +1,15 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import Price from '@/components/atoms/Price';
 import Button from '@/components/atoms/Button';
 import Badge from '@/components/atoms/Badge';
+import MediaRenderer from '@/components/atoms/MediaRenderer';
 import { useCart } from '@/context/CartContext';
 
 export default function ProductCard({ product }) {
   const { addItem, openCart } = useCart();
   const { id, name, price, image, description, available } = product;
-
-  // Simple video source detection
-  const isVideo = image && (
-    image.endsWith('.mp4') || 
-    image.endsWith('.webm') || 
-    image.includes('youtube.com') || 
-    image.includes('youtu.be')
-  );
 
   const handleAddToCart = (e) => {
     e.preventDefault();
@@ -35,31 +27,13 @@ export default function ProductCard({ product }) {
     >
       {/* Product Image / Video container */}
       <div className="relative aspect-square w-full bg-slate-50 overflow-hidden">
-        {image ? (
-          isVideo ? (
-            <video
-              src={image}
-              autoPlay
-              muted
-              loop
-              playsInline
-              className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
-            />
-          ) : (
-            <Image
-              src={image}
-              alt={name}
-              fill
-              className="object-cover group-hover:scale-105 transition-transform duration-500"
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              unoptimized
-            />
-          )
-        ) : (
-          <div className="h-full w-full flex items-center justify-center text-slate-400 font-extrabold text-3xl select-none">
-            🐾
-          </div>
-        )}
+        <MediaRenderer
+          src={image}
+          alt={name}
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          className="group-hover:scale-105 transition-transform duration-500"
+          autoPlay
+        />
 
         {/* Availability Badge */}
         {!available && (
