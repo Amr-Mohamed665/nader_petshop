@@ -15,6 +15,7 @@ const PERIOD_OPTIONS = [
   { value: 'all', label: 'All Time' },
   { value: 'today', label: 'Today' },
   { value: 'week', label: 'This Week' },
+  { value: 'month', label: 'This Month' },
   { value: '3months', label: '3 Months' },
   { value: '6months', label: '6 Months' },
   { value: '1year', label: '1 Year' },
@@ -35,21 +36,31 @@ function getFilteredOrders(orders, period) {
     case 'week': {
       const startOfWeek = new Date();
       startOfWeek.setDate(now.getDate() - 7);
+      startOfWeek.setHours(0, 0, 0, 0);
       return orders.filter((o) => orderDate(o.createdAt) >= startOfWeek);
+    }
+    case 'month': {
+      const startOfMonth = new Date();
+      startOfMonth.setDate(1);
+      startOfMonth.setHours(0, 0, 0, 0);
+      return orders.filter((o) => orderDate(o.createdAt) >= startOfMonth);
     }
     case '3months': {
       const startOf3Months = new Date();
       startOf3Months.setMonth(now.getMonth() - 3);
+      startOf3Months.setHours(0, 0, 0, 0);
       return orders.filter((o) => orderDate(o.createdAt) >= startOf3Months);
     }
     case '6months': {
       const startOf6Months = new Date();
       startOf6Months.setMonth(now.getMonth() - 6);
+      startOf6Months.setHours(0, 0, 0, 0);
       return orders.filter((o) => orderDate(o.createdAt) >= startOf6Months);
     }
     case '1year': {
       const startOf1Year = new Date();
       startOf1Year.setFullYear(now.getFullYear() - 1);
+      startOf1Year.setHours(0, 0, 0, 0);
       return orders.filter((o) => orderDate(o.createdAt) >= startOf1Year);
     }
     default:
@@ -153,7 +164,7 @@ export default function AdminDashboardPage() {
               />
 
               {/* Charts */}
-              <DashboardCharts orders={filteredOrders} />
+              <DashboardCharts orders={filteredOrders} period={selectedPeriod} />
 
               {/* Recent Orders */}
               <RecentOrders orders={recentOrders} />

@@ -1,8 +1,8 @@
 'use client';
 
 import {
-  BarChart,
-  Bar,
+  AreaChart,
+  Area,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -14,13 +14,91 @@ import {
   Legend,
 } from 'recharts';
 
+// Build hourly revenue for today
+function buildTodayRevenue(orders) {
+  const slots = [
+    { label: '12 AM', start: 0, end: 3 },
+    { label: '3 AM', start: 3, end: 6 },
+    { label: '6 AM', start: 6, end: 9 },
+    { label: '9 AM', start: 9, end: 12 },
+    { label: '12 PM', start: 12, end: 15 },
+    { label: '3 PM', start: 15, end: 18 },
+    { label: '6 PM', start: 18, end: 21 },
+    { label: '9 PM', start: 21, end: 24 },
+  ];
+  const now = new Date();
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+
+  return slots.map((slot) => {
+    const revenue = orders
+      .filter((o) => {
+        const od = new Date(o.createdAt);
+        const oHour = od.getHours();
+        return od >= startOfToday && oHour >= slot.start && oHour < slot.end && o.status === 'completed';
+      })
+      .reduce((sum, o) => sum + (o.total || 0), 0);
+    return { label: slot.label, revenue: Math.round(revenue) };
+  });
+}
+
+// Build daily revenue for this week
+function buildWeeklyRevenue(orders) {
+  const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const now = new Date();
+  const result = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(now.getDate() - i);
+    d.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(d);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const dayLabel = daysOfWeek[d.getDay()];
+    const dateStr = `${d.getMonth() + 1}/${d.getDate()}`;
+
+    const revenue = orders
+      .filter((o) => {
+        const od = new Date(o.createdAt);
+        return od >= d && od <= endOfDay && o.status === 'completed';
+      })
+      .reduce((sum, o) => sum + (o.total || 0), 0);
+
+    result.push({ label: `${dayLabel} ${dateStr}`, revenue: Math.round(revenue) });
+  }
+  return result;
+}
+
+// Build daily revenue for this month (from the 1st to today)
+function buildMonthlyDailyRevenue(orders) {
+  const now = new Date();
+  const result = [];
+  const totalDays = now.getDate(); // 1 to current date
+
+  for (let i = 1; i <= totalDays; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth(), i);
+    d.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(d);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const dateStr = `${d.getMonth() + 1}/${i}`;
+    const revenue = orders
+      .filter((o) => {
+        const od = new Date(o.createdAt);
+        return od >= d && od <= endOfDay && o.status === 'completed';
+      })
+      .reduce((sum, o) => sum + (o.total || 0), 0);
+
+    result.push({ label: dateStr, revenue: Math.round(revenue) });
+  }
+  return result;
+}
+
 // Build monthly revenue data from real orders
-function buildMonthlyRevenue(orders) {
+function buildMonthlyRevenue(orders, monthsCount = 6) {
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const now = new Date();
-  // Show last 6 months
   const result = [];
-  for (let i = 5; i >= 0; i--) {
+  for (let i = monthsCount - 1; i >= 0; i--) {
     const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
     const monthIdx = d.getMonth();
     const year = d.getFullYear();
@@ -30,10 +108,31 @@ function buildMonthlyRevenue(orders) {
         return od.getMonth() === monthIdx && od.getFullYear() === year && o.status === 'completed';
       })
       .reduce((sum, o) => sum + (o.total || 0), 0);
-    result.push({ month: months[monthIdx], revenue: Math.round(revenue) });
+    result.push({ label: months[monthIdx], revenue: Math.round(revenue) });
   }
   return result;
 }
+
+function buildChartData(orders, period) {
+  switch (period) {
+    case 'today':
+      return buildTodayRevenue(orders);
+    case 'week':
+      return buildWeeklyRevenue(orders);
+    case 'month':
+      return buildMonthlyDailyRevenue(orders);
+    case '3months':
+      return buildMonthlyRevenue(orders, 3);
+    case '6months':
+      return buildMonthlyRevenue(orders, 6);
+    case '1year':
+      return buildMonthlyRevenue(orders, 12);
+    case 'all':
+    default:
+      return buildMonthlyRevenue(orders, 6);
+  }
+}
+
 
 // Build order status distribution
 function buildStatusData(orders) {
@@ -87,8 +186,28 @@ function StatusTooltip({ active, payload }) {
   return null;
 }
 
-export default function DashboardCharts({ orders = [] }) {
-  const monthlyRevenue = buildMonthlyRevenue(orders);
+const REVENUE_SUBTITLES = {
+  today: 'Completed orders revenue — today',
+  week: 'Completed orders revenue — this week',
+  month: 'Completed orders revenue — this month',
+  '3months': 'Completed orders revenue — last 3 months',
+  '6months': 'Completed orders revenue — last 6 months',
+  '1year': 'Completed orders revenue — last year',
+  all: 'Completed orders revenue — all time',
+};
+
+const STATUS_SUBTITLES = {
+  today: 'Distribution of orders today',
+  week: 'Distribution of orders this week',
+  month: 'Distribution of orders this month',
+  '3months': 'Distribution of orders last 3 months',
+  '6months': 'Distribution of orders last 6 months',
+  '1year': 'Distribution of orders last year',
+  all: 'Distribution of all orders',
+};
+
+export default function DashboardCharts({ orders = [], period = 'all' }) {
+  const chartData = buildChartData(orders, period);
   const statusData = buildStatusData(orders);
   const hasOrders = orders.length > 0;
 
@@ -99,30 +218,35 @@ export default function DashboardCharts({ orders = [] }) {
         <div className="flex items-center justify-between mb-5">
           <div>
             <h3 className="text-sm font-extrabold text-slate-900 tracking-tight">Revenue Overview</h3>
-            <p className="text-[11px] text-slate-400 mt-0.5">Completed orders revenue — last 6 months</p>
+            <p className="text-[11px] text-slate-400 mt-0.5">{REVENUE_SUBTITLES[period] || REVENUE_SUBTITLES.all}</p>
           </div>
           <div className="w-8 h-8 bg-teal-50 rounded-lg flex items-center justify-center">
-            <i className="fa-solid fa-chart-bar text-teal-500 text-[14px]"></i>
+            <i className="fa-solid fa-chart-line text-teal-500 text-[14px]"></i>
           </div>
         </div>
 
         {!hasOrders ? (
           <div className="h-52 flex flex-col items-center justify-center text-slate-400">
-            <i className="fa-solid fa-chart-bar text-3xl mb-2 text-slate-200"></i>
+            <i className="fa-solid fa-chart-line text-3xl mb-2 text-slate-200"></i>
             <p className="text-xs font-semibold">No order data yet</p>
             <p className="text-[10px] text-slate-300 mt-1">Charts will populate as orders come in</p>
           </div>
         ) : (
           <div className="h-52 sm:h-60">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={monthlyRevenue}
-                margin={{ top: 4, right: 4, left: -10, bottom: 0 }}
-                barCategoryGap="30%"
+              <AreaChart
+                data={chartData}
+                margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
               >
+                <defs>
+                  <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#20B2A4" stopOpacity={0.2}/>
+                    <stop offset="95%" stopColor="#20B2A4" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" vertical={false} />
                 <XAxis
-                  dataKey="month"
+                  dataKey="label"
                   tick={{ fontSize: 11, fill: '#94A3B8', fontWeight: 600 }}
                   axisLine={false}
                   tickLine={false}
@@ -133,19 +257,16 @@ export default function DashboardCharts({ orders = [] }) {
                   tickLine={false}
                   tickFormatter={(v) => v >= 1000 ? `${(v / 1000).toFixed(1)}k` : v}
                 />
-                <Tooltip content={<RevenueTooltip />} cursor={{ fill: '#F8FAFC' }} />
-                <Bar
+                <Tooltip content={<RevenueTooltip />} />
+                <Area
+                  type="monotone"
                   dataKey="revenue"
+                  stroke="#20B2A4"
+                  strokeWidth={3}
+                  fillOpacity={1}
                   fill="url(#revenueGradient)"
-                  radius={[6, 6, 0, 0]}
                 />
-                <defs>
-                  <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#20B2A4" stopOpacity={1} />
-                    <stop offset="100%" stopColor="#20B2A4" stopOpacity={0.5} />
-                  </linearGradient>
-                </defs>
-              </BarChart>
+              </AreaChart>
             </ResponsiveContainer>
           </div>
         )}
@@ -156,7 +277,7 @@ export default function DashboardCharts({ orders = [] }) {
         <div className="flex items-center justify-between mb-5">
           <div>
             <h3 className="text-sm font-extrabold text-slate-900 tracking-tight">Order Status</h3>
-            <p className="text-[11px] text-slate-400 mt-0.5">Distribution of all orders</p>
+            <p className="text-[11px] text-slate-400 mt-0.5">{STATUS_SUBTITLES[period] || STATUS_SUBTITLES.all}</p>
           </div>
           <div className="w-8 h-8 bg-purple-50 rounded-lg flex items-center justify-center">
             <i className="fa-solid fa-chart-pie text-purple-500 text-[14px]"></i>

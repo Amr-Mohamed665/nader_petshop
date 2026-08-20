@@ -28,9 +28,4 @@ export const productsService = {
     const { data } = await api.delete(`/menu/${id}`);
     return data;
   },
-
-  async reorder(orderedIds) {
-    const { data } = await api.put('/menu/reorder', { orderedIds });
-    return data;
-  },
 };

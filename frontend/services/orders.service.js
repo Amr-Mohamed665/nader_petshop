@@ -1,11 +1,11 @@
 import api from './api';
+import Cookies from 'js-cookie';
 
 const DELETED_ORDERS_KEY = 'deleted_order_ids';
 
 export function getDeletedOrderIds() {
-  if (typeof window === 'undefined') return ['1786441898754'];
   try {
-    const stored = localStorage.getItem(DELETED_ORDERS_KEY);
+    const stored = Cookies.get(DELETED_ORDERS_KEY);
     const list = stored ? JSON.parse(stored) : ['1786441898754'];
     if (!list.includes('1786441898754')) list.push('1786441898754');
     return list;
@@ -53,15 +53,13 @@ export const ordersService = {
   },
 
   async delete(id) {
-    if (typeof window !== 'undefined') {
-      try {
-        const deleted = getDeletedOrderIds();
-        if (!deleted.includes(String(id))) {
-          deleted.push(String(id));
-          localStorage.setItem(DELETED_ORDERS_KEY, JSON.stringify(deleted));
-        }
-      } catch (_) {}
-    }
+    try {
+      const deleted = getDeletedOrderIds();
+      if (!deleted.includes(String(id))) {
+        deleted.push(String(id));
+        Cookies.set(DELETED_ORDERS_KEY, JSON.stringify(deleted), { expires: 365 });
+      }
+    } catch (_) {}
     try {
       const { data } = await api.delete(`/orders/${id}`);
       return data;

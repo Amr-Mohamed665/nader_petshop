@@ -41,16 +41,4 @@ function deleteMenuItem(req, res, next) {
   res.status(200).json({ success: true, message: "Menu item deleted successfully." });
 }
 
-// PUT /api/menu/reorder  (admin only)
-function reorderMenuItems(req, res, next) {
-  const { orderedIds } = req.body;
-
-  if (!Array.isArray(orderedIds) || orderedIds.length === 0) {
-    return next(new ApiError(400, "'orderedIds' must be a non-empty array of product IDs."));
-  }
-
-  const items = menuItemsStore.reorder(orderedIds);
-  res.status(200).json({ success: true, data: items });
-}
-
-module.exports = { getMenu, getMenuItem, createMenuItem, updateMenuItem, deleteMenuItem, reorderMenuItems };
+module.exports = { getMenu, getMenuItem, createMenuItem, updateMenuItem, deleteMenuItem };

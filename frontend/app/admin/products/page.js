@@ -30,7 +30,6 @@ import Spinner from '@/components/atoms/Spinner';
 import ErrorState from '@/components/molecules/ErrorState';
 import ConfirmModal from '@/components/molecules/ConfirmModal';
 import { productsService } from '@/services/products.service';
-import { useQueryClient } from '@tanstack/react-query';
 
 // ─── Sortable Row ─────────────────────────────────────────────────────────────
 function SortableProductRow({ product, onEdit, onDelete, onToggleStatus, isDragOverlay }) {
@@ -260,7 +259,6 @@ function SortableProductCard({ product, onDelete, onToggleStatus, isDragOverlay 
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function AdminProductsPage() {
-  const queryClient = useQueryClient();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -309,7 +307,6 @@ export default function AdminProductsPage() {
     try {
       await productsService.delete(deleteTarget.id);
       setDeleteTarget(null);
-      queryClient.invalidateQueries({ queryKey: ['products'] });
       fetchProducts();
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to delete product.');
@@ -332,9 +329,7 @@ export default function AdminProductsPage() {
         available: updatedStatus,
       });
 
-      if (res?.success) {
-        queryClient.invalidateQueries({ queryKey: ['products'] });
-      } else {
+      if (!res?.success) {
         // Revert status on failure
         setProducts((prev) =>
           prev.map((p) => (p.id === product.id ? { ...p, available: product.available } : p))
@@ -354,27 +349,17 @@ export default function AdminProductsPage() {
     setActiveId(active.id);
   };
 
-  const handleDragEnd = async ({ active, over }) => {
+  const handleDragEnd = ({ active, over }) => {
     setActiveId(null);
     if (!over || active.id === over.id) return;
 
-    let updatedProducts = [];
     setProducts((prev) => {
       const oldIndex = prev.findIndex((p) => p.id === active.id);
       const newIndex = prev.findIndex((p) => p.id === over.id);
-      updatedProducts = arrayMove(prev, oldIndex, newIndex);
-      return updatedProducts;
+      return arrayMove(prev, oldIndex, newIndex);
     });
-
-    try {
-      const orderedIds = updatedProducts.map((p) => p.id);
-      await productsService.reorder(orderedIds);
-      queryClient.invalidateQueries({ queryKey: ['products'] });
-    } catch (err) {
-      alert(err.response?.data?.message || 'Failed to persist product sort order.');
-      // Re-fetch to restore correct order on error
-      fetchProducts();
-    }
+    // NOTE: Backend does not currently support sort order persistence.
+    // When the API supports it, call: productsService.updateOrder(newOrderedIds)
   };
 
   // Filtered products for search

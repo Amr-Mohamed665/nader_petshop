@@ -5,7 +5,6 @@ const {
   createMenuItem,
   updateMenuItem,
   deleteMenuItem,
-  reorderMenuItems,
 } = require("../controllers/menu.controller");
 const validateMenuItem = require("../middleware/validateMenuItem");
 const authenticate = require("../middleware/authenticate");
@@ -19,7 +18,6 @@ router.get("/:id", getMenuItem);
 
 // Admin only — creating/editing/removing dishes
 router.post("/", authenticate, requireRole("admin"), validateMenuItem, createMenuItem);
-router.put("/reorder", authenticate, requireRole("admin"), reorderMenuItems);
 router.put("/:id", authenticate, requireRole("admin"), validateMenuItem, updateMenuItem);
 router.delete("/:id", authenticate, requireRole("admin"), deleteMenuItem);
 
