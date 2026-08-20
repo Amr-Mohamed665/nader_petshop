@@ -108,15 +108,21 @@ function SortableProductRow({ product, onEdit, onDelete, onToggleStatus, isDragO
         {onToggleStatus ? (
           <button
             onClick={() => onToggleStatus(product)}
-            className="cursor-pointer focus:outline-none transition-transform hover:scale-105 active:scale-95 block w-fit"
+           className="cursor-pointer focus:outline-none transition-transform hover:scale-105 active:scale-95 block w-[105px]"
             title="Click to toggle availability"
           >
-            <Badge variant={product.available ? 'success' : 'danger'}>
+            <Badge
+  variant={product.available ? 'success' : 'danger'}
+  className="w-[105px] justify-center"
+>
               {product.available ? 'In Stock' : 'Out of Stock'}
             </Badge>
           </button>
         ) : (
-          <Badge variant={product.available ? 'success' : 'danger'}>
+          <Badge
+  variant={product.available ? 'success' : 'danger'}
+  className="w-[105px] justify-center"
+>
             {product.available ? 'In Stock' : 'Out of Stock'}
           </Badge>
         )}
