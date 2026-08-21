@@ -44,6 +44,7 @@ function create(data) {
     description: data.description || "",
     image: data.image || "",
     available: data.available !== undefined ? Boolean(data.available) : true,
+    featured: data.featured !== undefined ? Boolean(data.featured) : false,
     createdAt: new Date().toISOString(),
   };
 
@@ -66,6 +67,7 @@ function update(id, data) {
     description: data.description ?? existing.description,
     image: data.image ?? existing.image,
     available: data.available !== undefined ? Boolean(data.available) : existing.available,
+    featured: data.featured !== undefined ? Boolean(data.featured) : (existing.featured ?? false),
   };
 
   items[index] = updated;

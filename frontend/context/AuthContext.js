@@ -4,6 +4,7 @@ import { createContext, useContext, useState, useEffect, useCallback } from 'rea
 import Cookies from 'js-cookie';
 import { authService } from '@/services/auth.service';
 import { queryClient } from '@/lib/queryClient';
+import { toastSuccess } from '@/utils/toast';
 
 const AuthContext = createContext(null);
 
@@ -75,6 +76,7 @@ export function AuthProvider({ children }) {
     Cookies.remove('pet-shop-token');
     Cookies.remove('pet-shop-user');
     queryClient.clear(); // Clear all cached React Query queries to isolate data
+    toastSuccess('Logged out successfully.');
   }, []);
 
   return (

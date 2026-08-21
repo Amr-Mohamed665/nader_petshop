@@ -8,6 +8,7 @@ import ProductForm from '@/components/organisms/ProductForm';
 import Spinner from '@/components/atoms/Spinner';
 import ErrorState from '@/components/molecules/ErrorState';
 import { productsService } from '@/services/products.service';
+import { toastSuccess, toastError } from '@/utils/toast';
 
 export default function EditProductPage() {
   const { id } = useParams();
@@ -16,7 +17,6 @@ export default function EditProductPage() {
   const [fetchLoading, setFetchLoading] = useState(true);
   const [fetchError, setFetchError] = useState(null);
   const [submitLoading, setSubmitLoading] = useState(false);
-  const [submitError, setSubmitError] = useState('');
 
   const fetchProduct = useCallback(async () => {
     setFetchLoading(true);
@@ -42,16 +42,16 @@ export default function EditProductPage() {
 
   const handleSubmit = async (data) => {
     setSubmitLoading(true);
-    setSubmitError('');
     try {
       const response = await productsService.update(id, data);
       if (response.success) {
+        toastSuccess('Product updated successfully.');
         router.push('/admin/products');
       } else {
-        setSubmitError(response.message || 'Failed to update product.');
+        toastError(response.message || 'Failed to update product.');
       }
     } catch (err) {
-      setSubmitError(err.response?.data?.message || err.message || 'An error occurred.');
+      toastError(err, 'Failed to update product.');
     } finally {
       setSubmitLoading(false);
     }
@@ -92,12 +92,6 @@ export default function EditProductPage() {
             </p>
           </div>
 
-          {submitError && (
-            <div className="bg-rose-50 border border-rose-100 text-xs text-rose-600 p-4 rounded-xl font-bold max-w-xl">
-              ⚠️ {submitError}
-            </div>
-          )}
-
           <ProductForm
             initialValues={{
               name: product.name || '',
@@ -106,9 +100,11 @@ export default function EditProductPage() {
               description: product.description || '',
               image: product.image || '',
               available: product.available !== false,
+              featured: product.featured === true,
             }}
             onSubmit={handleSubmit}
             isLoading={submitLoading}
+            mode="edit"
           />
         </div>
       </AdminLayout>

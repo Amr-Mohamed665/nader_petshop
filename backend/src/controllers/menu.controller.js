@@ -4,7 +4,7 @@ const ApiError = require("../utils/ApiError");
 // GET /api/menu?search=&category=  (public — no login needed)
 function getMenu(req, res) {
   const { search, category } = req.query;
-  const items = menuItemsStore.getAll({ search, category, availableOnly: true });
+  const items = menuItemsStore.getAll({ search, category });
   res.status(200).json({ success: true, count: items.length, data: items });
 }
 

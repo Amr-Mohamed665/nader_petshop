@@ -19,8 +19,9 @@ export const productSchema = z.object({
     z.number({ invalid_type_error: 'Price must be a number' }).min(0.01, 'Price must be greater than 0')
   ),
   description: z.string().optional(),
-  image: z.string().url('Must be a valid URL starting with http:// or https://').or(z.literal('')),
+  image: z.string().url('Must be a valid URL starting with http:// or https://').or(z.literal('')).optional(),
   available: z.boolean().default(true),
+  featured: z.boolean().default(false),
 });
 
 export const checkoutSchema = z.object({

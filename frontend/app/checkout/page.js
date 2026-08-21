@@ -12,18 +12,18 @@ import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import { ordersService } from '@/services/orders.service';
 
+import { toastSuccess, toastError } from '@/utils/toast';
+
 export default function CheckoutPage() {
   const router = useRouter();
   const { items, total, count, clearCart } = useCart();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
 
   const handlePlaceOrder = async () => {
     if (items.length === 0) return;
 
     setLoading(true);
-    setError('');
     try {
       // Transform cart items to the backend format: { menuItemId, quantity }
       const orderItems = items.map((item) => ({
@@ -35,14 +35,13 @@ export default function CheckoutPage() {
 
       if (response.success) {
         clearCart();
+        toastSuccess('Order submitted successfully.');
         router.push(`/orders/${response.data.id}`);
       } else {
-        setError(response.message || 'Failed to place order.');
+        toastError(response.message || 'Failed to place order.');
       }
     } catch (err) {
-      setError(
-        err.response?.data?.message || err.message || 'An error occurred while placing your order.'
-      );
+      toastError(err, 'An error occurred while placing your order.');
     } finally {
       setLoading(false);
     }
@@ -77,12 +76,6 @@ export default function CheckoutPage() {
               Review your order below and confirm to place it.
             </p>
           </div>
-
-          {error && (
-            <div className="bg-rose-50 border border-rose-100 text-xs text-rose-600 p-4 rounded-xl font-bold">
-              ⚠️ {error}
-            </div>
-          )}
 
           {/* Customer Info Card */}
           <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm space-y-3">

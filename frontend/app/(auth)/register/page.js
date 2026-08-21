@@ -11,12 +11,12 @@ import AuthLayout from '@/components/templates/AuthLayout';
 import GuestRoute from '@/components/guards/GuestRoute';
 import FormField from '@/components/molecules/FormField';
 import Button from '@/components/atoms/Button';
+import { toastSuccess, toastError } from '@/utils/toast';
 
 export default function RegisterPage() {
   const router = useRouter();
   const { register: signup } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [formError, setFormError] = useState('');
 
   const {
     register,
@@ -33,18 +33,16 @@ export default function RegisterPage() {
 
   const onSubmit = async (values) => {
     setLoading(true);
-    setFormError('');
     try {
       const response = await signup(values);
       if (response.success) {
+        toastSuccess('Registration successful.');
         router.replace('/');
       } else {
-        setFormError(response.message || 'Registration failed.');
+        toastError(response.message || 'Registration failed.');
       }
     } catch (err) {
-      setFormError(
-        err.response?.data?.message || err.message || 'Email might already be registered.'
-      );
+      toastError(err, 'Email might already be registered.');
     } finally {
       setLoading(false);
     }
@@ -62,12 +60,6 @@ export default function RegisterPage() {
               Fill in credentials to register a customer account.
             </p>
           </div>
-
-          {formError && (
-            <div className="bg-rose-50 border border-rose-100 text-xs text-rose-600 p-3 rounded-lg font-bold">
-              ⚠️ {formError}
-            </div>
-          )}
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <FormField
