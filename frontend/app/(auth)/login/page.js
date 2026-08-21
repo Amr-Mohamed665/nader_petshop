@@ -12,12 +12,11 @@ import GuestRoute from '@/components/guards/GuestRoute';
 import FormField from '@/components/molecules/FormField';
 import Button from '@/components/atoms/Button';
 
-import { toastSuccess, toastError } from '@/utils/toast';
-
 export default function LoginPage() {
   const router = useRouter();
   const { login } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [formError, setFormError] = useState('');
 
   const {
     register,
@@ -33,16 +32,19 @@ export default function LoginPage() {
 
   const onSubmit = async (values) => {
     setLoading(true);
+    setFormError('');
     try {
       const response = await login(values);
       if (response.success) {
-        toastSuccess('Login successful.');
+        // Redirect to homepage or previous url if desired
         router.replace('/');
       } else {
-        toastError(response.message || 'Login failed.');
+        setFormError(response.message || 'Login failed.');
       }
     } catch (err) {
-      toastError(err, 'Incorrect email or password.');
+      setFormError(
+        err.response?.data?.message || err.message || 'Incorrect email or password.'
+      );
     } finally {
       setLoading(false);
     }
@@ -60,6 +62,12 @@ export default function LoginPage() {
               Enter credentials to access account and place orders.
             </p>
           </div>
+
+          {formError && (
+            <div className="bg-rose-50 border border-rose-100 text-xs text-rose-600 p-3 rounded-lg font-bold">
+              ⚠️ {formError}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <FormField

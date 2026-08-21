@@ -1,8 +1,6 @@
 import { Outfit, Inter } from 'next/font/google';
 import './globals.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
-import 'react-toastify/dist/ReactToastify.css';
-import { ToastContainer } from 'react-toastify';
 import { AuthProvider } from '@/context/AuthContext';
 import { CartProvider } from '@/context/CartContext';
 import QueryProvider from '@/components/guards/QueryProvider';
@@ -35,18 +33,6 @@ export default function RootLayout({ children }) {
           <QueryProvider>
             <CartProvider>
               {children}
-              <ToastContainer
-                position="top-right"
-                autoClose={4000}
-                hideProgressBar={false}
-                newestOnTop
-                closeOnClick
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                limit={3}
-                theme="light"
-              />
             </CartProvider>
           </QueryProvider>
         </AuthProvider>

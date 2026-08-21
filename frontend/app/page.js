@@ -13,21 +13,19 @@ import ErrorState from '@/components/molecules/ErrorState';
 import { productsService } from '@/services/products.service';
 
 export default function Home() {
-  const [featuredProducts, setFeaturedProducts] = useState([]);
+  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchProducts = useCallback(async () => {
+  const fetchFeatured = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
       const response = await productsService.getAll();
       if (response.success) {
-        // Filter to only products explicitly marked as featured
-        const featured = response.data.filter(
-          (item) => item.featured === true && item.available !== false
-        );
-        setFeaturedProducts(featured);
+        // Filter out unavailable items if any, then select top 4
+        const availableItems = response.data.filter((item) => item.available !== false);
+        setProducts(availableItems);
       } else {
         setError(response.message || 'Failed to load featured products.');
       }
@@ -40,8 +38,8 @@ export default function Home() {
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    fetchProducts();
-  }, [fetchProducts]);
+    fetchFeatured();
+  }, [fetchFeatured]);
 
   return (
     <ShopLayout>
@@ -59,10 +57,10 @@ export default function Home() {
         </div>
       ) : error ? (
         <div className="py-8">
-          <ErrorState onRetry={fetchProducts} description={error} />
+          <ErrorState onRetry={fetchFeatured} description={error} />
         </div>
       ) : (
-        <FeaturedProducts products={featuredProducts} />
+        <FeaturedProducts products={products} />
       )}
 
       {/* About Al Nader */}
@@ -73,6 +71,7 @@ export default function Home() {
 
       {/* Why Choose Us */}
       <BenefitsSection />
+
     </ShopLayout>
   );
 }

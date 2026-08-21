@@ -3,7 +3,6 @@
 import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import Cookies from 'js-cookie';
 import { useAuth } from '@/context/AuthContext';
-import { toastSuccess } from '@/utils/toast';
 
 const CartContext = createContext(null);
 
@@ -56,7 +55,6 @@ export function CartProvider({ children }) {
         },
       ];
     });
-    toastSuccess(`${product.name} added to cart.`);
   }, []);
 
   const removeItem = useCallback((productId) => {

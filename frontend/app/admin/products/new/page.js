@@ -6,24 +6,24 @@ import AdminLayout from '@/components/templates/AdminLayout';
 import AdminRoute from '@/components/guards/AdminRoute';
 import ProductForm from '@/components/organisms/ProductForm';
 import { productsService } from '@/services/products.service';
-import { toastSuccess, toastError } from '@/utils/toast';
 
 export default function NewProductPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async (data) => {
     setLoading(true);
+    setError('');
     try {
       const response = await productsService.create(data);
       if (response.success) {
-        toastSuccess('Product added successfully.');
         router.push('/admin/products');
       } else {
-        toastError(response.message || 'Failed to create product.');
+        setError(response.message || 'Failed to create product.');
       }
     } catch (err) {
-      toastError(err, 'Failed to create product.');
+      setError(err.response?.data?.message || err.message || 'An error occurred.');
     } finally {
       setLoading(false);
     }
@@ -42,7 +42,13 @@ export default function NewProductPage() {
             </p>
           </div>
 
-          <ProductForm onSubmit={handleSubmit} isLoading={loading} mode="create" />
+          {error && (
+            <div className="bg-rose-50 border border-rose-100 text-xs text-rose-600 p-4 rounded-xl font-bold max-w-xl">
+              ⚠️ {error}
+            </div>
+          )}
+
+          <ProductForm onSubmit={handleSubmit} isLoading={loading} />
         </div>
       </AdminLayout>
     </AdminRoute>
