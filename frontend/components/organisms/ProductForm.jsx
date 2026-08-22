@@ -1,11 +1,12 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { productSchema } from '@/lib/validators';
 import FormField from '@/components/molecules/FormField';
 import Button from '@/components/atoms/Button';
 import { useCategoriesQuery } from '@/hooks/useCategories';
+import ImageUploader from '@/components/molecules/ImageUploader';
 
 export default function ProductForm({
   initialValues,
@@ -18,6 +19,7 @@ export default function ProductForm({
     handleSubmit,
     setValue,
     watch,
+    control,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(productSchema),
@@ -92,15 +94,18 @@ export default function ProductForm({
         placeholder="Provide details about product ingredients, sizing, care, or instructions."
       />
 
-      <FormField
-        id="image"
-        label="Media URL (Image or Video Link)"
-        register={register}
-        error={errors.image?.message}
-        placeholder="Image URL, YouTube, Vimeo, Dailymotion, or direct video link (.mp4, .webm)"
+      <Controller
+        name="image"
+        control={control}
+        render={({ field: { value, onChange } }) => (
+          <ImageUploader
+            value={value}
+            onChange={onChange}
+            error={errors.image?.message}
+            label="Product Image"
+          />
+        )}
       />
-
-    
 
       <div className="pt-3 flex justify-end gap-3 border-t border-slate-100">
         <Button
@@ -114,3 +119,4 @@ export default function ProductForm({
     </form>
   );
 }
+

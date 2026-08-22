@@ -32,13 +32,13 @@ export default function ProductDetailPage() {
     );
   }
 
-  if (error || !product) {
+  if (error || !product || !product.available) {
     return (
       <ShopLayout>
         <div className="py-12">
           <ErrorState
             title="Product not found"
-            description={error || "The requested product does not exist."}
+            description="The requested product does not exist or is currently unavailable."
             onRetry={refetch}
           />
         </div>
@@ -94,7 +94,7 @@ export default function ProductDetailPage() {
                   {category}
                 </span>
                 <Badge variant={available ? 'success' : 'danger'}>
-                  {available ? 'In Stock' : 'Out of Stock'}
+                  {available ? 'Available' : 'Unavailable'}
                 </Badge>
               </div>
 

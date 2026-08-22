@@ -1,10 +1,11 @@
 import api from './api';
 
 export const productsService = {
-  async getAll({ search, category } = {}) {
+  async getAll({ search, category, all } = {}) {
     const params = {};
     if (search) params.search = search;
     if (category) params.category = category;
+    if (all) params.all = all;
     const { data } = await api.get('/menu', { params });
     return data;
   },

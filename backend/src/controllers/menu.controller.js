@@ -1,10 +1,11 @@
 const menuItemsStore = require("../data/menuItemsStore");
 const ApiError = require("../utils/ApiError");
 
-// GET /api/menu?search=&category=  (public — no login needed)
+// GET /api/menu?search=&category=all=true  (public or admin depending on params)
 function getMenu(req, res) {
-  const { search, category } = req.query;
-  const items = menuItemsStore.getAll({ search, category, availableOnly: true });
+  const { search, category, all } = req.query;
+  const availableOnly = all !== "true";
+  const items = menuItemsStore.getAll({ search, category, availableOnly });
   res.status(200).json({ success: true, count: items.length, data: items });
 }
 

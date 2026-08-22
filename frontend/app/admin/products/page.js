@@ -115,7 +115,7 @@ function SortableProductRow({ product, onEdit, onDelete, onToggleStatus, isDragO
   variant={product.available ? 'success' : 'danger'}
   className="w-[105px] justify-center"
 >
-              {product.available ? 'In Stock' : 'Out of Stock'}
+              {product.available ? 'Available' : 'Unavailable'}
             </Badge>
           </button>
         ) : (
@@ -123,7 +123,7 @@ function SortableProductRow({ product, onEdit, onDelete, onToggleStatus, isDragO
   variant={product.available ? 'success' : 'danger'}
   className="w-[105px] justify-center"
 >
-            {product.available ? 'In Stock' : 'Out of Stock'}
+            {product.available ? 'Available' : 'Unavailable'}
           </Badge>
         )}
       </td>
@@ -225,12 +225,12 @@ function SortableProductCard({ product, onDelete, onToggleStatus, isDragOverlay 
               title="Click to toggle availability"
             >
               <Badge variant={product.available ? 'success' : 'danger'} className="text-[9px] px-1.5 py-0.5">
-                {product.available ? 'In Stock' : 'Out of Stock'}
+                {product.available ? 'Available' : 'Unavailable'}
               </Badge>
             </button>
           ) : (
             <Badge variant={product.available ? 'success' : 'danger'} className="text-[9px] px-1.5 py-0.5">
-              {product.available ? 'In Stock' : 'Out of Stock'}
+              {product.available ? 'Available' : 'Unavailable'}
             </Badge>
           )}
         </div>
@@ -289,7 +289,7 @@ export default function AdminProductsPage() {
     setLoading(true);
     setError(null);
     try {
-      const response = await productsService.getAll();
+      const response = await productsService.getAll({ all: true });
       if (response.success) {
         setProducts(response.data);
       } else {

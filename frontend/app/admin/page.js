@@ -80,7 +80,7 @@ export default function AdminDashboardPage() {
     setError(null);
     try {
       const [productsRes, ordersRes] = await Promise.all([
-        productsService.getAll(),
+        productsService.getAll({ all: true }),
         ordersService.getAll(),
       ]);
 

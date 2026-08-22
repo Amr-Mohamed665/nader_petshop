@@ -26,6 +26,7 @@ import Button from '@/components/atoms/Button';
 import ConfirmModal from '@/components/molecules/ConfirmModal';
 import Spinner from '@/components/atoms/Spinner';
 import ErrorState from '@/components/molecules/ErrorState';
+import ImageUploader from '@/components/molecules/ImageUploader';
 import {
   useCategoriesQuery,
   useCreateCategory,
@@ -40,14 +41,6 @@ function slugify(str) {
   return str.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
 }
 
-function isValidUrl(string) {
-  try {
-    new URL(string);
-    return true;
-  } catch (_) {
-    return false;
-  }
-}
 
 // ─── Sortable Category Row ───────────────────────────────────────────────────
 function SortableCategoryRow({ category, onEdit, onDelete, isDragOverlay }) {
@@ -248,33 +241,11 @@ function CategoryModal({ initial, onClose, onSave, existingSlugs, isSubmitting }
             />
           </div>
 
-          <div>
-            <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1.5">
-              Image URL
-            </label>
-            <input
-              id="cat-image"
-              type="url"
-              value={form.image}
-              onChange={(e) => set('image', e.target.value)}
-              placeholder="https://images.unsplash.com/..."
-              className="w-full px-3 py-2 text-sm border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
-            />
-          </div>
-
-          {/* Form Image Preview */}
-          {form.image && isValidUrl(form.image) && (
-            <div className="space-y-2">
-              <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Image Preview</span>
-              <div className="relative h-32 w-full rounded-xl overflow-hidden border border-slate-200 shadow-inner bg-slate-50">
-                <img
-                  src={form.image}
-                  alt="Category preview"
-                  className="object-cover w-full h-full"
-                />
-              </div>
-            </div>
-          )}
+          <ImageUploader
+            label="Category Image"
+            value={form.image}
+            onChange={(url) => set('image', url)}
+          />
 
           <div className="flex items-center justify-end gap-3 pt-2 border-t border-slate-100 mt-2">
             <button
